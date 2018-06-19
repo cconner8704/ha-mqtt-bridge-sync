@@ -63,6 +63,7 @@ def getdevices():
     devices_json_response = json.loads(devices_response.text)
     logging.warn("devices_uri: %s: devices_json_response:" % devices_uri)
     logging.warn("%s" % devices_json_response[0])
+    device_list = {}
 
     for device in devices_json_response:
         name = device["displayName"]
@@ -70,8 +71,8 @@ def getdevices():
         device_uri = "%s/device/%s" % (base_uri, id)
         device_response = requests.get(device_uri, headers=stapi_headers)
         device_json_response = json.loads(device_response.text)
-        logging.warn("device_uri: %s: device_json_response:" % devices_uri)
-        logging.warn("%s" % device_json_response[0])
+        logging.warn("device_uri: %s: device_json_response:" % device_uri)
+        logging.warn("%s" % device_json_response)
         attrs = {"switch", "power", "level"}
         logging.warn("supportedAttributes: %s" % device_json_response["supportedAttributes"])
         for attribute in attrs:
@@ -81,9 +82,11 @@ def getdevices():
                 attr_response = requests.get(attr_uri, headers=stapi_headers)
                 attr_json_response = json.loads(attr_response.text)
                 logging.warn("attr_uri: %s: attr_json_response:" % attr_uri)
-                logging.warn("%s" % attr_json_response[0])
+                logging.warn("%s" % attr_json_response)
                 attr_value = attr_json_response["value"]
                 bridge_post_data = {"name": name, "value": attr_value, "type": attribute}
+                device_list[name] = bridge_post_data
+
                 logging.warn("Pushing to bridge: name: %s: id: %s: attr: %s: value: %s" % (name, id, attribute, attr_value))
 #                bridge_push_response = requests.post(stbridge_uri, data=json.dumps(bridge_post_data), headers=stbridge_headers)
 
