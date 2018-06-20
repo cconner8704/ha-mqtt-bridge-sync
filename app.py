@@ -139,7 +139,7 @@ def updatedevices():
         attrs = {"switch", "power", "level"}
         logging.debug("supportedAttributes: %s" % device_json_response["supportedAttributes"])
         for attribute in attrs:
-            if attribute in json_response["supportedAttributes"]:
+            if attribute in device_json_response["supportedAttributes"]:
 #            if attribute == "power":
                 attr_uri = "%s/attribute/%s" % (device_uri, attribute)
                 try:
