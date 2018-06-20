@@ -5,10 +5,6 @@ import argparse
 import sys
 import logging
 
-#level=logging.DEBUG
-logging_level=logging.INFO
-logging.basicConfig(stream=sys.stdout, level=logging_level)
-
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-o', '--oauth', action='store', dest='oauth',
@@ -23,7 +19,17 @@ parser.add_argument('-p', '--bridgeport', action='store', dest='bridgeport',
 parser.add_argument('-s', '--bridgessl', action="store_true", dest='bridgessl',
                     default=False, help='Enable SSL for the SmartThings Bridge')
 
+parser.add_argument('-v', '--verbose', action="store_true", dest='verbose',
+                    default=False, help='Enable debug logging')
+
 args = parser.parse_args()
+
+if args.verbose:
+    logging_level=logging.DEBUG
+else:
+    logging_level=logging.INFO
+
+logging.basicConfig(stream=sys.stdout, level=logging_level)
 
 OAUTH_KEY = args.oauth
 OAUTH_STRING = "Bearer %s" % OAUTH_KEY
@@ -44,14 +50,14 @@ try:
     api_response = requests.get(stapi_uri, headers=stapi_headers)
     api_response.raise_for_status()
 except requests.exceptions.HTTPError as errh:
-    logging.exception("Http Error:", errh)
+    logging.exception("Http Error: %s" % errh)
     logging.exception("Got %s Look into this: %s" % (api_response.status_code, api_response.text))
 except requests.exceptions.ConnectionError as errc:
-    logging.exception("Error Connecting:", errc)
+    logging.exception("Error Connecting: %s" % errc)
 except requests.exceptions.Timeout as errt:
-    logging.exception("Timeout Error:", errt)
+    logging.exception("Timeout Error: %s" % errt)
 except requests.exceptions.RequestException as err:
-    logging.exception("RequestsException:", err)
+    logging.exception("RequestsException: %s" % err)
 
 api_json_response = json.loads(api_response.text)
 
@@ -77,14 +83,14 @@ def getdevices():
         devices_response = requests.get(devices_uri, headers=stapi_headers)
         devices_response.raise_for_status()
     except requests.exceptions.HTTPError as errh:
-        logging.exception("Http Error:", errh)
+        logging.exception("Http Error: %s" % errh)
         logging.exception("Got %s Look into this: %s" % (devices_response.status_code, devices_response.text))
     except requests.exceptions.ConnectionError as errc:
-        logging.exception("Error Connecting:", errc)
+        logging.exception("Error Connecting: %s" % errc)
     except requests.exceptions.Timeout as errt:
-        logging.exception("Timeout Error:", errt)
+        logging.exception("Timeout Error: %s" % errt)
     except requests.exceptions.RequestException as err:
-        logging.exception("RequestsException:", err)
+        logging.exception("RequestsException: %s" % err)
 
     devices_json_response = json.loads(devices_response.text)
     logging.debug("devices_uri: %s: devices_json_response:" % devices_uri)
@@ -103,14 +109,14 @@ def updatedevices():
         devices_response = requests.get(devices_uri, headers=stapi_headers)
         devices_response.raise_for_status()
     except requests.exceptions.HTTPError as errh:
-        logging.exception("Http Error:", errh)
+        logging.exception("Http Error: %s" % errh)
         logging.exception("Got %s Look into this: %s" % (devices_response.status_code, devices_response.text))
     except requests.exceptions.ConnectionError as errc:
-        logging.exception("Error Connecting:", errc)
+        logging.exception("Error Connecting: %s" % errc)
     except requests.exceptions.Timeout as errt:
-        logging.exception("Timeout Error:", errt)
+        logging.exception("Timeout Error: %s" % errt)
     except requests.exceptions.RequestException as err:
-        logging.exception("RequestsException:", err)
+        logging.exception("RequestsException: %s" % err)
 
     devices_json_response = json.loads(devices_response.text)
     logging.debug("devices_uri: %s: devices_json_response:" % devices_uri)
@@ -124,14 +130,14 @@ def updatedevices():
             device_response = requests.get(device_uri, headers=stapi_headers)
             device_response.raise_for_status()
         except requests.exceptions.HTTPError as errh:
-            logging.exception("Http Error:", errh)
+            logging.exception("Http Error: %s" % errh)
             logging.exception("Got %s Look into this: %s" % (device_response.status_code, device_response.text))
         except requests.exceptions.ConnectionError as errc:
-            logging.exception("Error Connecting:", errc)
+            logging.exception("Error Connecting: %s" % errc)
         except requests.exceptions.Timeout as errt:
-            logging.exception("Timeout Error:", errt)
+            logging.exception("Timeout Error: %s" % errt)
         except requests.exceptions.RequestException as err:
-            logging.exception("RequestsException:", err)
+            logging.exception("RequestsException: %s" % err)
 
         device_json_response = json.loads(device_response.text)
         logging.debug("device_uri: %s: device_json_response:" % device_uri)
@@ -146,21 +152,21 @@ def updatedevices():
                     attr_response = requests.get(attr_uri, headers=stapi_headers)
                     attr_response.raise_for_status()
                 except requests.exceptions.HTTPError as errh:
-                    logging.exception("Http Error:", errh)
+                    logging.exception("Http Error: %s" % errh)
                     logging.exception("Got %s Look into this: %s" % (attr_response.status_code, attr_response.text))
                 except requests.exceptions.ConnectionError as errc:
-                    logging.exception("Error Connecting:", errc)
+                    logging.exception("Error Connecting: %s" % errc)
                 except requests.exceptions.Timeout as errt:
-                    logging.exception("Timeout Error:", errt)
+                    logging.exception("Timeout Error: %s" % errt)
                 except requests.exceptions.RequestException as err:
-                    logging.exception("RequestsException:", err)
+                    logging.exception("RequestsException: %s" % err)
 
                 attr_json_response = json.loads(attr_response.text)
                 logging.debug("attr_uri: %s: attr_json_response:" % attr_uri)
                 logging.debug("%s" % attr_json_response)
                 attr_value = attr_json_response["value"]
                 if attr_value is not None:
-                    bridge_post_data = {"name": str(name), "value": attr_value, "type": str(attribute)}
+                    bridge_post_data = {"name": str(name), "value": str(attr_value), "type": str(attribute)}
                     logging.info(
                         "Pushing to bridge: name: %s: id: %s: attr: %s: value: %s" % (name, id, attribute, attr_value))
                     try:
@@ -168,14 +174,14 @@ def updatedevices():
                                                              headers=stbridge_headers)
                         bridge_push_response.raise_for_status()
                     except requests.exceptions.HTTPError as errh:
-                        logging.exception("Http Error:", errh)
+                        logging.exception("Http Error: %s" % errh)
                         logging.exception("Got %s Look into this: %s" % (bridge_push_response.status_code, bridge_push_response.text))
                     except requests.exceptions.ConnectionError as errc:
-                        logging.exception("Error Connecting:", errc)
+                        logging.exception("Error Connecting: %s" % errc)
                     except requests.exceptions.Timeout as errt:
-                        logging.exception("Timeout Error:", errt)
+                        logging.exception("Timeout Error: %s" % errt)
                     except requests.exceptions.RequestException as err:
-                        logging.exception("RequestsException:", err)
+                        logging.exception("RequestsException: %s" % err)
 
     return "Updating MQTT Bridge Devices Complete"
 
