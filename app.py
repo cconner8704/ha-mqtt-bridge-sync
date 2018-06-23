@@ -7,13 +7,16 @@ import logging
 
 parser = argparse.ArgumentParser()
 
+parser.add_argument('-p', '--port', action='store', dest='port',
+                    default=5000, help='Port for flask')
+
 parser.add_argument('-o', '--oauth', action='store', dest='oauth',
                     help='SmartThings Rest API OAuth Token')
 
 parser.add_argument('-b', '--bridgehost', action='store', dest='bridgehost',
                     help='Hostname of the SmartThings Bridge')
 
-parser.add_argument('-p', '--bridgeport', action='store', dest='bridgeport',
+parser.add_argument('-z', '--bridgeport', action='store', dest='bridgeport',
                     help='Port of the SmartThings Bridge')
 
 parser.add_argument('-s', '--bridgessl', action="store_true", dest='bridgessl',
@@ -26,8 +29,10 @@ args = parser.parse_args()
 
 if args.verbose:
     logging_level=logging.DEBUG
+    app_debug=True
 else:
     logging_level=logging.INFO
+    app_debug=False
 
 logging.basicConfig(stream=sys.stdout, level=logging_level)
 
@@ -186,7 +191,7 @@ def updatedevices():
     return "Updating MQTT Bridge Devices Complete"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=app_debug, host='0.0.0.0', port=args.port)
 
 
 
