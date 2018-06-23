@@ -5,9 +5,9 @@ depends on a REST API app in SmartThings:
 
 https://github.com/bradymholt/smartthings-rest-api
 
-Will eventually be added to docker container, but in mean-time:
+Docker container using python:3 and install flask, requests and supervisord
 
-pip install flask
+
 
 
 
