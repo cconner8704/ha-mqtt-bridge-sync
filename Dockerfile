@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y supervisor
 RUN mkdir -p /var/log/supervisor
 
 #Copy supervisor conf and app
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ha-mqtt-bridge-sync-supervisord.conf /etc/supervisor/conf.d/ha-mqtt-bridge-sync-supervisord.conf
 COPY app.py /app.py
 
 #Environment variables
@@ -22,4 +22,5 @@ ENV BRIDGEPORT 8080
 #Expose ports
 EXPOSE ${PORT}
 
-CMD ["/usr/bin/supervisord"]
+CMD ["/bin/sleep 1000000"]
+#CMD ["/usr/bin/supervisord"]
