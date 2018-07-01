@@ -22,5 +22,4 @@ ENV BRIDGEPORT 8080
 #Expose ports
 EXPOSE ${PORT}
 
-CMD ["/bin/sleep 1000000"]
-#CMD ["/usr/bin/supervisord"]
+CMD ["/usr/bin/supervisord"]
